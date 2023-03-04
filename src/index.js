@@ -40,7 +40,28 @@ app.get('/users/:userId', async (req, res) => {
     }
   });
   
-
+  app.get('/posts/:userId', async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    try {
+      const commentsResponse = await axios.get(`https://dummyjson.com/users/comments`);
+      const comments = commentsResponse.data;
+      const posts = [];
+  
+      for (let comment of comments) {
+        if (comment.userId === userId) {
+          const postId = comment.postId;
+          const postResponse = await axios.get(`https://dummyjson.com/users/posts/${postId}`);
+          const post = postResponse.data;
+          posts.push(post);
+        }
+      }
+  
+      res.json(posts);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error');
+    }
+  });
   
   
 
